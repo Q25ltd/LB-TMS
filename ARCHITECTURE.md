@@ -517,3 +517,48 @@ Never refactor structure and change behaviour in the same commit.
 - Name fields without checking DATA_DICTIONARY.md
 - Add a field to a form without knowing which DB column it maps to
 - Assume a feature is not built — check STATUS.md and actual routes/pages first
+
+---
+
+## Product boundary — TMS and Timesheets (decided 2026-09-30)
+
+LogisticBay is an umbrella **brand** with two independent **products**:
+
+| Product | Repo | Railway project | Target app domain |
+|---|---|---|---|
+| LogisticBay **TMS** (this repo) | `Q25ltd/LB-TMS` | `LB-TMS` | `tms.logisticbay.com` |
+| LogisticBay **Timesheets** | `Q25ltd/LB-Timesheet` | `LB-Timesheet` (own project) | `timesheets.logisticbay.com` |
+
+`logisticbay.com` is the public umbrella site (`/tms`, `/timesheets` marketing pages).
+Each product's authenticated app lives on its own subdomain and talks only to its own API
+and database. What is live today is in STATUS.md → Live URLs.
+
+**Shared brand ≠ shared runtime.** Shared domain ≠ shared database. Same customer ≠ same
+tenant record. Same email address ≠ same account. Same provider ≠ same resource.
+
+### May be shared (brand level)
+Logo, colours, typography, design language, public navigation, company/legal information,
+UX conventions, and code **copied by hand** into each repo.
+
+### Must never be shared (product level)
+- **Database** — each product has its own PostgreSQL service and credentials. Never one
+  database holding both products' tables; never a foreign key or query across products.
+- **Auth** — separate User / Company / Membership tables, separate JWT signing secrets,
+  separate refresh tokens, sessions, password-reset and email-verification state. A TMS
+  login is never valid in Timesheets or vice versa. No cookie scoped to `.logisticbay.com`.
+- **API** — each web app calls only its own API. The TMS API's CORS allowlist names TMS
+  web origins explicitly (`api/src/app.ts`) — **never a wildcard over `*.logisticbay.com`**,
+  which would trust the sibling product. Guarded by `api/src/tests/corsProductBoundary.test.ts`.
+- **Secrets, subscriptions, operational data, deployment lifecycle** — separate Railway
+  projects and Vercel projects. A bad deploy, migration or outage in one product must not
+  take the other down.
+- **Code** — no shared package, no import across repos, no monorepo link.
+
+Any future integration (e.g. SSO, shared company directory, data exchange) is an explicit,
+owner-approved architecture decision implemented through a designed API boundary — never
+introduced implicitly, never through database coupling.
+
+### Rule when touching domains, auth, database, deployment, cookies, APIs or company/user identity
+Ask: *is this brand-level or product-specific?* Brand-level may be shared; product-specific
+stays inside this repo's boundary. If unclear, STOP and report what is ambiguous, why it
+matters, the options, a recommendation, and what would be affected.

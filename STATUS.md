@@ -61,9 +61,11 @@ Gated 16-step build of the full load lifecycle. Per-step detail + gates live in 
 |---------|-----|
 | API | https://api-production-cdc9.up.railway.app |
 | Web | https://logisticbay.com / https://logisticbay.vercel.app |
-| Railway | https://railway.app/project/5b039bc6-fef3-4aa6-b423-1e1088aaa94b |
+| Railway | project `LB-TMS` (renamed from `logisticbay` 2026-09-30, same ID) — https://railway.app/project/5b039bc6-fef3-4aa6-b423-1e1088aaa94b |
 | Mobile (iOS/Android) | Expo — separate repo: https://github.com/Q25ltd/logisticbay-mobile |
-| Web + API repo | https://github.com/Q25ltd/logisticbay |
+| Web + API repo | https://github.com/Q25ltd/LB-TMS |
+
+**Product boundary (ARCHITECTURE.md § Product boundary):** TMS is still served from `www.logisticbay.com` (apex redirects there); `tms.logisticbay.com` is in the API CORS allowlist but not yet configured in DNS/Vercel. The TMS API's production CORS allowlist is explicit TMS origins only — the `*.logisticbay.com` wildcard was removed 2026-09-30 so a sibling product (Timesheets) can never be trusted. Timesheets is a separate product/repo with no deployment yet.
 
 ---
 

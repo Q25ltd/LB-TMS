@@ -27,11 +27,12 @@ export async function buildApp(
 ): Promise<FastifyInstance> {
   const app = Fastify({ logger: opts.silent ? false : true });
 
+  // TMS web origins only — the public intake form (/request/:token) is served from these too.
+  // Never a wildcard over *.logisticbay.com: sibling products (timesheets.logisticbay.com)
+  // share the domain but must never be trusted by the TMS API. See ARCHITECTURE.md § Product boundary.
   const allowedOrigins = process.env.NODE_ENV === "production"
     ? ["https://logisticbay.com", "https://www.logisticbay.com", "https://logisticbay.vercel.app",
-       // Public intake form — no auth required, must be allowed from anywhere a customer might open it
-       /^https:\/\/.*\.logisticbay\.com$/,
-      ]
+       "https://tms.logisticbay.com"]
     : true;
 
   await app.register(cors, {
