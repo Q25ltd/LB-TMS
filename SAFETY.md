@@ -154,6 +154,10 @@ Never guess around `companyId`, JWT, refresh tokens, roles, permissions, ownersh
 
 Never casually change queue structure, `clientEventId` behaviour, retry behaviour, failed event retention, sync response parsing, optimistic UI behaviour, or offline login/cache assumptions. Drivers must not lose work because an agent "cleaned up" sync code.
 
+### Product boundary — TMS and Timesheets never share runtime
+
+LogisticBay TMS (this repo) and LogisticBay Timesheets (`LB-Timesheet`) share the brand and the `logisticbay.com` domain — nothing else. Never make them share a database, auth (users, sessions, tokens, JWT secrets, cookies), API, secrets, subscriptions, operational data, or deployment. Never widen the TMS API's CORS allowlist to a `*.logisticbay.com` wildcard. Any change touching domains, auth, database, deployment, cookies or company/user identity: ask "brand-level or product-specific?" — if unclear, stop and ask the owner. Full rules: ARCHITECTURE.md § Product boundary.
+
 ---
 
 ## PART 2 — PRODUCTION SAFETY STANDARDS

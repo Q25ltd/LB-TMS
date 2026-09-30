@@ -3,7 +3,21 @@
 > Historical record of every session: what was built, what was decided, what is still outstanding.
 > Read this to understand the WHY behind past decisions and avoid re-debating closed questions.
 > Do NOT rewrite history — only append. New entries go at the TOP.
-> Last updated: 2026-08-18
+> Last updated: 2026-09-30
+
+---
+
+## Repo/Railway renamed to LB-TMS; TMS ↔ Timesheets product boundary written down and enforced in CORS 2026-09-30
+
+**Renames (identity only, no runtime change).** GitHub `Q25ltd/logisticbay` → `Q25ltd/LB-TMS` (same repo ID 1221016856, redirect active); local folder `timesheet-app` → `LB-TMS` (worktrees repaired, absolute `core.hooksPath` updated in `.git/config` + 3 `config.worktree`); Railway project `logisticbay` → `LB-TMS` (same project ID, `projectUpdate` name-only; no redeploy — `RAILWAY_PROJECT_NAME` is the only derived value that changed, unused by code). Vercel Git link resolved by repo ID; Railway API source followed the rename automatically. **Deliberately NOT renamed:** Vercel project `logisticbay`, domains, API host `api-production-cdc9.up.railway.app` (baked into the mobile app), Railway services, production DB `railway`, env vars, bundle ID, package names. Local Docker Compose identity is pinned to `timesheet-app` via an ignored root `.env` (`COMPOSE_PROJECT_NAME`) so the existing local DB volume stays attached — a TMS-specific Docker/DB rename is a separate, planned migration.
+
+**Decided — product boundary (ARCHITECTURE.md § Product boundary, SAFETY.md).** LogisticBay is the brand; TMS and Timesheets are independent products that share only the brand and `logisticbay.com`. Target: `logisticbay.com` umbrella site with `/tms` + `/timesheets`; apps on `tms.` / `timesheets.` subdomains; each with its own API, database, auth, secrets and Railway/Vercel projects. Never a shared DB, auth, cookie, JWT secret or API; any integration is an explicit owner decision through a designed API.
+
+**Built — CORS enforces the boundary.** The production allowlist in `api/src/app.ts` replaced the `/^https:\/\/.*\.logisticbay\.com$/` wildcard (added with the public intake form in b821a6e, but that form is served from the TMS web origins anyway, and Vercel serves no other subdomain) with explicit TMS origins: apex, `www`, `logisticbay.vercel.app`, plus `tms.logisticbay.com` ahead of the planned move. New `corsProductBoundary.test.ts` proves TMS origins pass and `timesheets.`/`timesheets-api.`/arbitrary subdomains are refused. Partially addresses REMEDIATION item on the CORS wildcard (`credentials: true` and the non-production `origin: true` left as-is).
+
+Gates: typecheck ✅ · check:vocab ✅ · new CORS tests 2/2 ✅ · knip: no new unused exports ✅. **Not green, pre-existing owner WIP (uncommitted JobProof/sync work, untouched):** check:docs ❌ (`JobProof` model has no DATA_DICTIONARY section) and api tests 325/333 — the 8 failures are in `jobProof`/`loadtrack`/`reconcileLoadState` tests where sync returns "Failed to save event"; unrelated to the CORS change (those tests run the non-production CORS branch).
+
+**Open:** move TMS web to `tms.logisticbay.com` (then free the apex for the umbrella site); decide the TMS API custom hostname (mobile-app compatibility plan needed); Timesheets gets its own Railway project `LB-Timesheet`; Docker/local-DB TMS naming migration; `LB-Timesheet/DECISIONS.md` still lists `app.`/`api.logisticbay.com` for the TMS — to be corrected in a Timesheets session.
 
 ---
 
