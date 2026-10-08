@@ -178,7 +178,7 @@ export async function jobRequestRoutes(app: FastifyInstance, prisma: PrismaClien
   // proxies the request here so the crawler gets real OG tags.
   app.get("/og/request/:token", async (request, reply) => {
     const { token } = request.params as { token: string };
-    const appUrl    = env.APP_URL ?? "https://www.logisticbay.com";
+    const appUrl    = env.APP_URL;
 
     const link = await resolveLink(prisma, token).catch(() => null);
     const isValid =

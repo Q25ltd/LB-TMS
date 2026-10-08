@@ -65,7 +65,7 @@ Gated 16-step build of the full load lifecycle. Per-step detail + gates live in 
 | Mobile (iOS/Android) | Expo — separate repo: https://github.com/Q25ltd/logisticbay-mobile |
 | Web + API repo | https://github.com/Q25ltd/LB-TMS |
 
-**Product boundary (ARCHITECTURE.md § Product boundary):** TMS is still served from `www.logisticbay.com` (apex redirects there); `tms.logisticbay.com` is in the API CORS allowlist but not yet configured in DNS/Vercel. The TMS API's production CORS allowlist is explicit TMS origins only — the `*.logisticbay.com` wildcard was removed 2026-09-30 so a sibling product (Timesheets) can never be trusted. Timesheets is a separate product/repo with no deployment yet.
+**Product boundary (ARCHITECTURE.md § Product boundary):** TMS is still served from `www.logisticbay.com` (apex redirects there); `tms.logisticbay.com` is in the API CORS allowlist but not yet configured in DNS/Vercel. The code is prepared for it (2026-10-08): `APP_URL` defaults to `https://tms.logisticbay.com` (emailed links, request-link share previews) and `web/index.html` share metadata names it — so production `APP_URL` must stay set to the address the web app actually answers on until the move is done. The TMS API's production CORS allowlist is explicit TMS origins only — the `*.logisticbay.com` wildcard was removed 2026-09-30 so a sibling product (Timesheets) can never be trusted. Timesheets is a separate product/repo with no deployment yet.
 
 ---
 

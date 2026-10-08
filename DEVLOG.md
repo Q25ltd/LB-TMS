@@ -3,7 +3,25 @@
 > Historical record of every session: what was built, what was decided, what is still outstanding.
 > Read this to understand the WHY behind past decisions and avoid re-debating closed questions.
 > Do NOT rewrite history — only append. New entries go at the TOP.
-> Last updated: 2026-09-30
+> Last updated: 2026-10-08
+
+---
+
+## Prepared for tms.logisticbay.com; landing page advertises only what is built 2026-10-08
+
+Owner-approved Phase 3 of the domain plan: the TMS moves to `tms.logisticbay.com` and `logisticbay.com` becomes the LogisticBay brand site (separate repo `Q25ltd/LB-Website`). This session prepares the code only — **no DNS, Vercel, Railway or domain change was made.**
+
+**Links and share previews.** `env.APP_URL` now defaults to `https://tms.logisticbay.com` (was the apex, which will serve the brand site and has no `/reset-password`, `/verify-email` or `/request/:token`). `GET /og/request/:token` used `env.APP_URL ?? "https://www.logisticbay.com"` — a dead fallback, since `env.APP_URL` always has a value; it now reads `env.APP_URL` alone, so there is one place the web address is decided. `web/index.html` share tags (`og:url`, `og:image`, `twitter:image`) name `tms.`; its title and description no longer say "track freight across the UK". `middleware.ts` is unchanged — it proxies to the API by `API_URL`, not by web domain. CORS is unchanged: `tms.` was already allowed, and the apex/`www` stay allowed until the move is verified.
+
+**Deploy-order consequence (why this is a PR, not a push to main):** if production Railway has no `APP_URL` set, merging switches emailed links to `tms.` before that host resolves. Merge after `tms.` is live, or confirm `APP_URL` is set explicitly first.
+
+**Landing page (`/`) claims audited against this file.** Removed: AI Intelligence (stub), Load Marketplace (stub), "monitor in real time" / "Live real-time updates" (no live status from mobile on the Runs screen; no live location feed), "VOR status and upcoming maintenance schedules" (MOT/VOR fields 🔶, no maintenance), "automatic odometer & mileage tracking" (odometer is typed by the driver), "shift reports emailed to office as PDF" (depends on email being enabled; the PDF has no web download), "drivers download the app" (no distributable build has been produced — P0.20), "import your team", the stats band and the "replaces WhatsApp / paper timesheets / spreadsheets" section, the phone mock-up (it read as a screenshot), and the "Free during MVP / cancel anytime" pricing promises (a commercial commitment, not a verified capability — owner may restore). Kept, each ✅ above: job intake, customer request links, runs and allocation, fleet records, drivers + holidays + working-time checks, and the driver app's jobs/stops/directions/hazards/checklist/collect-deliver/offline sync. Wordmark logo unchanged; footer now "© 2026 Q25 Ltd. LogisticBay is a brand of Q25 Ltd."
+
+**Proof.** New `api/src/tests/appUrl.test.ts`: the default with `APP_URL` unset (child process), the OG HTML's `og:url`/`og:image`/redirect, the reset and verification links built from `APP_URL`, and no API source building a `www.` link. Mutation-checked: restoring the apex default fails 1, hard-coding `www` in the OG route fails 2.
+
+Gates (CI-equivalent: throwaway Postgres 16, CI's dummy secrets, no SendGrid key): api typecheck ✅ · web typecheck ✅ · check:vocab ✅ · check:docs ✅ · migrate deploy ✅ · api tests 330/330 ✅ · web build ✅ · knip: no new findings beyond the existing `dotenv/config` pattern shared by every test. Landing page checked in a browser at desktop and 375px: no console errors, no `/auth/*` calls, no horizontal overflow.
+
+**Open (each needs the owner's approval when done):** Wix CNAME `tms`; add `tms.logisticbay.com` to Vercel project `logisticbay`; verify; Railway `APP_URL=https://tms.logisticbay.com`; then the apex/`www` move to `lb-website`; afterwards drop the apex/`www` from the CORS allowlist. `web/index.html` links `/logo.svg`, which does not exist (pre-existing; untouched).
 
 ---
 
