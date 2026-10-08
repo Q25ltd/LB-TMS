@@ -1,59 +1,54 @@
 import { useNavigate } from "react-router-dom";
 
+// Every capability on this page is ✅ in STATUS.md. Nothing planned, partial
+// or stubbed is advertised here — when a feature is finished, it is added.
+
 const FEATURES = [
   {
     icon: "📋",
-    name: "Planner & Dispatch",
-    desc: "Create jobs, assign drivers, and monitor your entire operation in real time from one screen.",
-    badge: "Live",
-    color: "from-blue-500 to-blue-600",
+    name: "Detailed job intake",
+    desc: "Create jobs with stops, load details and vehicle requirements — including dangerous goods and temperature control — with checks before a job is ready to plan.",
     bg: "bg-blue-50",
   },
   {
-    icon: "📱",
-    name: "Driver App",
-    desc: "Drivers receive jobs on their phone, complete vehicle checks, update status, and submit digital shift reports.",
-    badge: "Live",
-    color: "from-green-500 to-emerald-600",
+    icon: "🔗",
+    name: "Customer request links",
+    desc: "Give customers a link to request transport. Requests arrive for review, and you accept or reject each one.",
+    bg: "bg-indigo-50",
+  },
+  {
+    icon: "🗓️",
+    name: "Runs and allocation",
+    desc: "Group jobs into runs, assign a driver, truck and trailer on one screen, and publish the run to the driver.",
     bg: "bg-green-50",
   },
   {
     icon: "🚛",
-    name: "Fleet & Equipment",
-    desc: "Track trucks, trailers, VOR status, and upcoming maintenance schedules automatically.",
-    badge: "Live",
-    color: "from-orange-400 to-orange-500",
+    name: "Fleet",
+    desc: "Keep your trucks and trailers on record, with their type and status, ready to put on a run.",
     bg: "bg-orange-50",
   },
   {
-    icon: "🤖",
-    name: "AI Intelligence",
-    desc: "AI learns your routes and delays to suggest smarter daily plans and cut wasted time.",
-    badge: "Future",
-    color: "from-purple-500 to-indigo-600",
-    bg: "bg-purple-50",
+    icon: "👥",
+    name: "Drivers and holidays",
+    desc: "Keep your drivers in one place, handle holiday requests and approvals, and check working time.",
+    bg: "bg-slate-100",
   },
-  {
-    icon: "🏗️",
-    name: "Load Marketplace",
-    desc: "Clients post loads, hauliers bid, and winning loads automatically become planned jobs.",
-    badge: "Future",
-    color: "from-rose-500 to-pink-600",
-    bg: "bg-rose-50",
-  },
+];
+
+const DRIVER_APP = [
+  "Today's and upcoming jobs, with every stop in order",
+  "Address, booked time, site contact and directions for each stop",
+  "Hazard and load safety information shown up front",
+  "Start-of-shift vehicle setup and checklist",
+  "Collection and delivery recorded at each stop",
+  "Works offline — syncs when the signal returns",
 ];
 
 const STEPS = [
-  { n: "1", title: "Register your company", body: "Create a free account in under 2 minutes. No credit card needed." },
-  { n: "2", title: "Add drivers & vehicles", body: "Import your team in seconds. Drivers download the app and are ready to go." },
-  { n: "3", title: "Run your first shift", body: "Plan jobs, dispatch drivers, and get live shift reports straight to your inbox." },
-];
-
-const PAIN_POINTS = [
-  { old: "WhatsApp group chaos", icon: "💬" },
-  { old: "Paper timesheets", icon: "📄" },
-  { old: "Excel spreadsheets", icon: "📊" },
-  { old: "Phone calls for updates", icon: "📞" },
+  { n: "1", title: "Register your company", body: "Create your company account and confirm your email address." },
+  { n: "2", title: "Add drivers, trucks and trailers", body: "Set up your team and your fleet in the planner." },
+  { n: "3", title: "Plan your first run", body: "Take a job in, put it on a run with a driver, truck and trailer, and publish it." },
 ];
 
 export default function LandingPage() {
@@ -67,10 +62,11 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="text-xl font-black tracking-tight">
             Logistic<span className="text-blue-500">Bay</span>
+            <span className="ml-2 text-sm font-bold text-slate-500">TMS</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <button
-              className="hidden sm:inline-flex text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
               onClick={() => nav("/login")}
             >
               Sign in
@@ -79,7 +75,7 @@ export default function LandingPage() {
               className="inline-flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors shadow-sm"
               onClick={() => nav("/register")}
             >
-              Start Free →
+              Register
             </button>
           </div>
         </div>
@@ -94,84 +90,34 @@ export default function LandingPage() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-20 sm:pt-24 sm:pb-28">
-          {/* pill badge */}
-          <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-            Planner &amp; Driver App — Live Now
+          <div className="inline-flex items-center bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
+            LogisticBay TMS
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight mb-6">
-            Run your haulage<br />
+            Plan and dispatch<br />
             <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-              without the chaos
+              your transport work
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl text-slate-300 max-w-xl mb-8 leading-relaxed">
-            LogisticBay replaces WhatsApp groups, paper timesheets, and spreadsheets with one smart platform built for UK haulage.
+            Take transport jobs in, plan them into runs, put a driver, truck and trailer on each run, and send the work to your drivers' phones.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               className="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-400 text-white font-bold text-base px-7 py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-500/30"
               onClick={() => nav("/register")}
             >
-              Register Free — No Card Needed
+              Register your company
             </button>
             <button
               className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-base px-7 py-3.5 rounded-xl transition-colors"
               onClick={() => nav("/login")}
             >
-              Sign In
+              Sign in
             </button>
-          </div>
-
-          <p className="text-slate-400 text-sm">
-            ✓ Free during MVP &nbsp;·&nbsp; ✓ Setup in 2 minutes &nbsp;·&nbsp; ✓ Your data stays yours
-          </p>
-        </div>
-      </section>
-
-      {/* ── REPLACE THESE ── */}
-      <section className="bg-slate-900 py-14">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <p className="text-center text-white text-lg font-black uppercase tracking-widest mb-2">
-            LogisticBay <span className="text-red-400">replaces</span>
-          </p>
-          <p className="text-center text-slate-400 text-sm mb-8">Stop patching it together. Replace the mess with one platform.</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {PAIN_POINTS.map(p => (
-              <div key={p.old} className="relative flex flex-col items-center gap-3 bg-red-950/40 border border-red-800/40 rounded-2xl px-4 py-6 text-center group hover:border-red-600/60 transition-colors">
-                {/* big X badge */}
-                <div className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg shadow-red-500/40">
-                  <span className="text-white text-xs font-black leading-none">✕</span>
-                </div>
-                <span className="text-3xl grayscale group-hover:grayscale-0 transition-all duration-200">{p.icon}</span>
-                <span className="text-sm font-semibold text-red-300 line-through decoration-red-500 decoration-2">{p.old}</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-slate-500 text-xs mt-6 tracking-wide">
-            ↑ These are gone. One platform does it all.
-          </p>
-        </div>
-      </section>
-
-      {/* ── STATS ── */}
-      <section className="bg-blue-500 py-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center text-white">
-            {[
-              { v: "2 min", l: "to set up" },
-              { v: "100%", l: "paperless shifts" },
-              { v: "Live", l: "real-time updates" },
-              { v: "Free", l: "MVP phase" },
-            ].map(({ v, l }) => (
-              <div key={l}>
-                <div className="text-3xl sm:text-4xl font-black">{v}</div>
-                <div className="text-blue-100 text-sm mt-1">{l}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -181,10 +127,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-3">
-              Everything in one place
+              For the planning office
             </h2>
             <p className="text-slate-500 max-w-lg mx-auto">
-              Five integrated modules. Start with what you need today — each one connects to the rest.
+              From the job coming in to the run going out to the driver.
             </p>
           </div>
 
@@ -192,98 +138,36 @@ export default function LandingPage() {
             {FEATURES.map(f => (
               <div
                 key={f.name}
-                className="group relative bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
               >
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${f.bg} text-2xl mb-4`}>
+                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${f.bg} text-2xl mb-4`} aria-hidden="true">
                   {f.icon}
                 </div>
-
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-bold text-slate-900 text-base">{f.name}</h3>
-                  <span className={`ml-2 shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${
-                    f.badge === "Live"
-                      ? "bg-green-100 text-green-700"
-                      : f.badge === "Coming Soon"
-                      ? "bg-orange-100 text-orange-700"
-                      : "bg-purple-100 text-purple-700"
-                  }`}>
-                    {f.badge === "Live" ? "● " : ""}{f.badge}
-                  </span>
-                </div>
-
+                <h3 className="font-bold text-slate-900 text-base mb-2">{f.name}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
-
-                <div className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-b-2xl bg-gradient-to-r ${f.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── DRIVER APP HIGHLIGHT ── */}
+      {/* ── DRIVER APP ── */}
       <section className="bg-gradient-to-br from-slate-900 to-slate-800 py-20 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-12">
-          <div className="flex-1 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 text-green-300 text-xs font-bold px-3 py-1.5 rounded-full mb-5 uppercase tracking-wider">
-              ✓ Live Now
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
-              Your drivers stay<br />connected from their phone
-            </h2>
-            <p className="text-slate-300 text-lg mb-6 leading-relaxed">
-              The LogisticBay driver app lets every driver receive jobs, complete vehicle safety checks, track mileage, and submit a digital shift report — all without paper.
-            </p>
-            <ul className="space-y-3 text-slate-300 text-sm mb-8">
-              {[
-                "Digital vehicle safety checks — truck & trailer",
-                "Real-time job status updates",
-                "Automatic odometer & mileage tracking",
-                "Shift reports emailed to office as PDF",
-                "Works offline — syncs when connected",
-              ].map(item => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5 shrink-0">✓</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <button
-              className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-400 text-white font-bold px-6 py-3 rounded-xl transition-colors"
-              onClick={() => nav("/register")}
-            >
-              Get Started Free →
-            </button>
-          </div>
-
-          {/* phone mockup */}
-          <div className="flex-shrink-0 relative">
-            <div className="w-56 sm:w-64 bg-slate-700 rounded-3xl border-4 border-slate-600 shadow-2xl overflow-hidden">
-              <div className="bg-slate-800 px-4 pt-5 pb-3">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-white font-black text-sm">Logistic<span className="text-blue-400">Bay</span></span>
-                  <span className="w-2 h-2 bg-green-400 rounded-full" />
-                </div>
-                <div className="bg-blue-500 text-white text-xs font-bold px-3 py-2 rounded-lg mb-2">
-                  🚛 Today — 3 jobs assigned
-                </div>
-              </div>
-              <div className="px-4 pb-5 space-y-2">
-                {["Pickup — Manchester", "Delivery — Leeds", "Return — Depot"].map((j, i) => (
-                  <div key={j} className="bg-slate-800/80 rounded-lg px-3 py-2.5 flex items-center justify-between">
-                    <span className="text-slate-200 text-xs">{j}</span>
-                    <span className={`text-xs font-bold ${i === 0 ? "text-green-400" : i === 1 ? "text-blue-400" : "text-slate-400"}`}>
-                      {i === 0 ? "Done" : i === 1 ? "Active" : "Pending"}
-                    </span>
-                  </div>
-                ))}
-                <div className="bg-green-500/20 border border-green-500/40 rounded-lg px-3 py-2 mt-3">
-                  <span className="text-green-300 text-xs font-bold">✓ Shift report submitted</span>
-                </div>
-              </div>
-            </div>
-            {/* glow */}
-            <div className="absolute inset-0 -z-10 blur-3xl opacity-20 bg-blue-500 rounded-full scale-110" />
-          </div>
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
+            For the driver
+          </h2>
+          <p className="text-slate-300 text-lg mb-8 leading-relaxed max-w-2xl">
+            When a run is published, the driver sees it in the LogisticBay driver app and works through it stop by stop.
+          </p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-slate-300 text-sm">
+            {DRIVER_APP.map(item => (
+              <li key={item} className="flex items-start gap-2">
+                <span className="text-green-400 mt-0.5 shrink-0" aria-hidden="true">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -291,8 +175,7 @@ export default function LandingPage() {
       <section className="py-20 px-4 sm:px-6 bg-slate-50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-3">Up and running in minutes</h2>
-            <p className="text-slate-500">No training needed. No IT team required.</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-3">Getting started</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
@@ -315,17 +198,14 @@ export default function LandingPage() {
       {/* ── FINAL CTA ── */}
       <section className="py-20 px-4 sm:px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4">
-            Ready to ditch the spreadsheets?
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-8">
+            Ready to plan your first run?
           </h2>
-          <p className="text-slate-500 text-lg mb-8">
-            Free during MVP phase. Full access. No credit card. Cancel anytime.
-          </p>
           <button
             className="inline-flex items-center justify-center w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-black text-lg px-10 py-4 rounded-2xl transition-colors shadow-xl shadow-blue-500/30"
             onClick={() => nav("/register")}
           >
-            Register Your Company Free →
+            Register your company
           </button>
           <p className="text-slate-400 text-sm mt-4">
             Already have an account?{" "}
@@ -342,11 +222,7 @@ export default function LandingPage() {
           <div className="font-black text-slate-700 text-base">
             Logistic<span className="text-blue-500">Bay</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span>© 2026 LogisticBay</span>
-            <span className="text-slate-200">·</span>
-            <span>Built for UK haulage</span>
-          </div>
+          <span>© 2026 Q25 Ltd. LogisticBay is a brand of Q25 Ltd.</span>
         </div>
       </footer>
 
