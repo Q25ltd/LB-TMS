@@ -3,7 +3,27 @@
 > Historical record of every session: what was built, what was decided, what is still outstanding.
 > Read this to understand the WHY behind past decisions and avoid re-debating closed questions.
 > Do NOT rewrite history — only append. New entries go at the TOP.
-> Last updated: 2026-10-08
+> Last updated: 2026-10-09
+
+---
+
+## Landing page redesigned in the LogisticBay brand ("The Lane"); official favicon 2026-10-09
+
+Public presentation only — no API, auth, schema, workflow or app-page change. Owner-approved three-site redesign (brand guidelines: `Q25ltd/LB-Website` BRAND.md).
+
+**Landing page (`/`)** rebuilt with the shared LogisticBay brand: official logo lockup (was a typed wordmark), navy/blue/ink tokens with a restrained hi-vis amber, self-hosted Inter Variable (`web/src/assets/brand/`, OFL licence alongside), no emoji. All styles are scoped under `.lb-landing` in `web/src/modules/landing/landing.css`, so nothing reaches the operational app's Tailwind styling. Sections: hero with the real Runs board and three callouts; "From request to run" — a keyboard-accessible tab stepper (Request → Job → Plan → Dispatch) showing real screens; the capabilities already kept on 2026-10-08 plus the Planning board; Fleet; driver app (with "being prepared for its first pilot, not yet in the app stores", per P0.20); an honest **Early development** status panel ("currently designed around UK operations"); getting started; footer linking LogisticBay, LogisticBay Timesheets and support@.
+
+**Removed claim:** "confirm your email address" from Getting started — `EMAIL_ENABLED` is false in production (no SendGrid key), so registration does not ask for it.
+
+**Screens** are real captures of this app (`main` 79568ed) run locally against a throwaway database seeded through the API's own intake routes with fictional data ("Example Haulage"); never production data. WebP, two widths, intrinsic sizes, lazy below the fold.
+
+**Favicon.** `index.html` linked `/logo.svg`, which never existed (the SPA rewrite returned HTML, so browsers showed no icon). Now `/favicon.png` — byte-identical to the official LogisticBay favicon (`LB-Timesheet/web/public/favicon.png`). The unused Vite-template `public/favicon.svg` is deleted.
+
+**SEO.** Title "LogisticBay TMS — Transport Management System", canonical, theme colour, new 1200×630 share image in the brand template, `robots.txt` (allows `/`, disallows `/app/`, `/request/`, token pages) and a one-URL `sitemap.xml`.
+
+Gates (throwaway Postgres, dummy secrets): typecheck ✅ · check:vocab ✅ · check:docs ✅ · api tests 330/330 ✅ · web build ✅ · knip: no new findings (the 3 unused files are pre-existing). Incognito smoke: `/`, `/login`, `/register`, `/request/:token` render with no `/auth/*` calls and no console errors; `/app/dashboard` → `/login`. Checked at 1440px and 390px with no horizontal overflow.
+
+**Noticed, not changed (TMS engineering):** the Planning run card shows freight quantities with a leading zero ("026 pallets", "02626 pallets need 02626 floor spaces") — looks like string concatenation of quantities. `ClientRequestLink.rawToken` is returned by `GET /request-links` alongside its hash.
 
 ---
 

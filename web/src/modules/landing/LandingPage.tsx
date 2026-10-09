@@ -1,39 +1,182 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import "./landing.css";
+import logo from "../../assets/brand/logisticbay-logo.png";
+import runs1200 from "../../assets/landing/runs-1200.webp";
+import runs2000 from "../../assets/landing/runs-2000.webp";
+import planning1200 from "../../assets/landing/planning-1200.webp";
+import planning2000 from "../../assets/landing/planning-2000.webp";
+import job1200 from "../../assets/landing/jobs-1-1200.webp";
+import job2000 from "../../assets/landing/jobs-1-2000.webp";
+import fleet1200 from "../../assets/landing/fleet-1200.webp";
+import fleet2000 from "../../assets/landing/fleet-2000.webp";
+import request390 from "../../assets/landing/request-phone-390.webp";
+import request780 from "../../assets/landing/request-phone-780.webp";
 
-// Every capability on this page is ✅ in STATUS.md. Nothing planned, partial
-// or stubbed is advertised here — when a feature is finished, it is added.
+// The public face of LogisticBay TMS, in the shared LogisticBay brand
+// ("The Lane" — Q25ltd/LB-Website BRAND.md). Every capability on this page is
+// ✅ in STATUS.md; nothing planned, partial or stubbed is advertised. Every
+// picture is a real screen of this application, captured locally with
+// fictional demonstration data ("Example Haulage") — never production data.
 
-const FEATURES = [
+// Until the domain move, logisticbay.com still serves this app; these links
+// become the brand site once it moves (no change needed here).
+const BRAND_SITE = "https://logisticbay.com";
+const TIMESHEETS_SITE = "https://timesheets.logisticbay.com";
+const SUPPORT_EMAIL = "support@logisticbay.com";
+const DEMO_NOTE = "Real interface, fictional demonstration data.";
+
+type IconName = "arrow" | "check" | "request" | "clipboard" | "route" | "truck" | "users" | "phone" | "board";
+
+const ICON_PATHS: Record<IconName, string> = {
+  arrow: "M5 12h14m-5-5 5 5-5 5",
+  check: "m5 12.5 4.5 4.5L19 7.5",
+  request: "M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66L11.5 6.8M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1.5-1.46",
+  clipboard: "M9 4h6v3H9zM7 5.5H5.5v15h13v-15H17M8.5 11h7M8.5 14.5h7M8.5 18h4",
+  route: "M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm12-10a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM8 17h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7",
+  truck: "M3 6h11v9H3zM14 9h4l3 3v3h-7M7 18.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm10 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z",
+  users: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 6.5M18.5 20a6.5 6.5 0 0 0-2.5-5.1",
+  phone: "M7.5 3h9a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1ZM11 18h2",
+  board: "M4 5h16v14H4zM4 9h16M9 9v10M15 9v10",
+};
+
+function Icon({ name }: { name: IconName }) {
+  return (
+    <svg className="lb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d={ICON_PATHS[name]} />
+    </svg>
+  );
+}
+
+interface ScreenProps {
+  src: string;
+  srcSet: string;
+  sizes: string;
+  width: number;
+  height: number;
+  alt: string;
+  address?: string;
+  phone?: boolean;
+  eager?: boolean;
+}
+
+/** A real screen of the application, framed as a browser window or a phone. */
+function Screen({ src, srcSet, sizes, width, height, alt, address, phone = false, eager = false }: ScreenProps) {
+  return (
+    <figure className={phone ? "lb-screen lb-screen--phone" : "lb-screen"}>
+      <div className="lb-screen__frame">
+        {!phone && (
+          <div className="lb-screen__bar" aria-hidden="true">
+            <span className="lb-screen__dots"><i /><i /><i /></span>
+            {address !== undefined && <span className="lb-screen__address">{address}</span>}
+          </div>
+        )}
+        <img
+          src={src}
+          srcSet={srcSet}
+          sizes={sizes}
+          width={width}
+          height={height}
+          alt={alt}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+        />
+      </div>
+    </figure>
+  );
+}
+
+const BROWSER_SIZES = "(max-width: 960px) 92vw, 760px";
+
+const SCREENS = {
+  runs: {
+    src: runs1200, srcSet: `${runs1200} 1200w, ${runs2000} 2000w`, width: 1200, height: 750,
+    address: "tms.logisticbay.com/app/runs",
+    alt: "The Runs screen: each run with its collection and delivery, a readiness score and checks, and the driver, truck and trailer assigned, beside the company's drivers, units and trailers.",
+  },
+  planning: {
+    src: planning1200, srcSet: `${planning1200} 1200w, ${planning2000} 2000w`, width: 1200, height: 750,
+    address: "tms.logisticbay.com/app/planning",
+    alt: "The Planning screen: freight that needs planning on the left, and runs with their stops and planning checks on the right.",
+  },
+  job: {
+    src: job1200, srcSet: `${job1200} 1200w, ${job2000} 2000w`, width: 1200, height: 750,
+    address: "tms.logisticbay.com/app/jobs",
+    alt: "A job's detail: customer and reference, load, vehicle requirements and each stop with its booked time and instructions.",
+  },
+  fleet: {
+    src: fleet1200, srcSet: `${fleet1200} 1200w, ${fleet2000} 2000w`, width: 1200, height: 479,
+    address: "tms.logisticbay.com/app/fleet",
+    alt: "The Fleet screen: the company's units with their class and status.",
+  },
+  request: {
+    src: request390, srcSet: `${request390} 390w, ${request780} 780w`, width: 390, height: 844,
+    alt: "A customer's transport request form on a phone: their details, stops, load, special and transport requirements, and billing.",
+  },
+} as const;
+
+interface Step {
+  id: string;
+  title: string;
+  summary: string;
+  points: string[];
+  screen: keyof typeof SCREENS;
+}
+
+const STEPS: Step[] = [
   {
-    icon: "📋",
-    name: "Detailed job intake",
-    desc: "Create jobs with stops, load details and vehicle requirements — including dangerous goods and temperature control — with checks before a job is ready to plan.",
-    bg: "bg-blue-50",
+    id: "request",
+    title: "Request",
+    summary: "Customers request transport through your link.",
+    points: [
+      "Share one link with your customers",
+      "They give stops, load and requirements on any device",
+      "Each request arrives for you to accept or reject",
+    ],
+    screen: "request",
   },
   {
-    icon: "🔗",
-    name: "Customer request links",
-    desc: "Give customers a link to request transport. Requests arrive for review, and you accept or reject each one.",
-    bg: "bg-indigo-50",
+    id: "job",
+    title: "Job",
+    summary: "Every job carries the detail the work needs.",
+    points: [
+      "Stops with booked times, references and instructions",
+      "Dangerous goods and temperature control",
+      "Checks before a job is ready to plan",
+    ],
+    screen: "job",
   },
   {
-    icon: "🗓️",
-    name: "Runs and allocation",
-    desc: "Group jobs into runs, assign a driver, truck and trailer on one screen, and publish the run to the driver.",
-    bg: "bg-green-50",
+    id: "plan",
+    title: "Plan",
+    summary: "Turn waiting freight into runs.",
+    points: [
+      "See the freight that needs planning",
+      "Build runs stop by stop",
+      "Planning checks flag what does not fit",
+    ],
+    screen: "planning",
   },
   {
-    icon: "🚛",
-    name: "Fleet",
-    desc: "Keep your trucks and trailers on record, with their type and status, ready to put on a run.",
-    bg: "bg-orange-50",
+    id: "dispatch",
+    title: "Dispatch",
+    summary: "Allocate and publish to the driver.",
+    points: [
+      "Driver, truck and trailer on one screen",
+      "Readiness checks before you publish",
+      "The published run goes to the driver app",
+    ],
+    screen: "runs",
   },
-  {
-    icon: "👥",
-    name: "Drivers and holidays",
-    desc: "Keep your drivers in one place, handle holiday requests and approvals, and check working time.",
-    bg: "bg-slate-100",
-  },
+];
+
+const CAPABILITIES: { icon: IconName; title: string; body: string }[] = [
+  { icon: "clipboard", title: "Detailed job intake", body: "Create jobs with stops, load details and vehicle requirements — including dangerous goods and temperature control — with checks before a job is ready to plan." },
+  { icon: "request", title: "Customer request links", body: "Give customers a link to request transport. Requests arrive for review, and you accept or reject each one." },
+  { icon: "board", title: "Planning board", body: "See the freight waiting to be planned beside your runs, and build each run stop by stop." },
+  { icon: "route", title: "Runs and allocation", body: "Group jobs into runs, assign a driver, truck and trailer on one screen, and publish the run to the driver." },
+  { icon: "truck", title: "Fleet", body: "Keep your trucks and trailers on record, with their type and status, ready to put on a run." },
+  { icon: "users", title: "Drivers and holidays", body: "Keep your drivers in one place, handle holiday requests and approvals, and see when a run's hours look too long." },
 ];
 
 const DRIVER_APP = [
@@ -45,187 +188,251 @@ const DRIVER_APP = [
   "Works offline — syncs when the signal returns",
 ];
 
-const STEPS = [
-  { n: "1", title: "Register your company", body: "Create your company account and confirm your email address." },
-  { n: "2", title: "Add drivers, trucks and trailers", body: "Set up your team and your fleet in the planner." },
-  { n: "3", title: "Plan your first run", body: "Take a job in, put it on a run with a driver, truck and trailer, and publish it." },
-];
+function Lockup() {
+  return (
+    <>
+      <img src={logo} width={640} height={162} alt="" />
+      <span className="lb-lockup__rule" aria-hidden="true" />
+      <span className="lb-lockup__product">TMS</span>
+    </>
+  );
+}
 
 export default function LandingPage() {
-  const nav = useNavigate();
+  const [active, setActive] = useState(STEPS[0].id);
+  const step = STEPS.find(s => s.id === active) ?? STEPS[0];
+  const screen = SCREENS[step.screen];
+  const isPhone = step.screen === "request";
+
+  function onStepKey(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+    const delta = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+    if (delta === 0) return;
+    event.preventDefault();
+    const next = STEPS[(index + delta + STEPS.length) % STEPS.length];
+    setActive(next.id);
+    document.getElementById(`lb-step-${next.id}`)?.focus();
+  }
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="lb-landing">
+      <a className="lb-skip" href="#lb-main">Skip to main content</a>
 
-      {/* ── NAV ── */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="text-xl font-black tracking-tight">
-            Logistic<span className="text-blue-500">Bay</span>
-            <span className="ml-2 text-sm font-bold text-slate-500">TMS</span>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-              onClick={() => nav("/login")}
-            >
-              Sign in
-            </button>
-            <button
-              className="inline-flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors shadow-sm"
-              onClick={() => nav("/register")}
-            >
-              Register
-            </button>
+      <header className="lb-header">
+        <div className="lb-container lb-header__bar">
+          <Link to="/" className="lb-lockup" aria-label="LogisticBay TMS home"><Lockup /></Link>
+          <nav aria-label="Main">
+            <ul className="lb-nav">
+              <li><a href="#workflow">How it works</a></li>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#driver">Driver app</a></li>
+              <li><a href="#status">Status</a></li>
+              <li><a href={BRAND_SITE}>LogisticBay</a></li>
+            </ul>
+          </nav>
+          <div className="lb-header__actions">
+            <Link className="lb-header__signin" to="/login">Sign in</Link>
+            <Link className="lb-button lb-button--primary" to="/register">Register</Link>
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* ── HERO ── */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden">
-        {/* background decoration */}
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: "radial-gradient(circle at 20% 50%, #3b82f6 0%, transparent 50%), radial-gradient(circle at 80% 20%, #6366f1 0%, transparent 40%)"
-        }} />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
-
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-20 sm:pt-24 sm:pb-28">
-          <div className="inline-flex items-center bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
-            LogisticBay TMS
+      <main id="lb-main">
+        <section className="lb-hero" aria-labelledby="lb-hero-title">
+          <div className="lb-container">
+            <div className="lb-hero__text">
+              <span className="lb-status">Early development</span>
+              <h1 id="lb-hero-title">Plan and dispatch <span>your transport work.</span></h1>
+              <p className="lb-hero__lede">
+                Take transport jobs in, plan them into runs, put a driver, truck and trailer on each run, and send the work
+                to your drivers' phones.
+              </p>
+              <div className="lb-hero__actions">
+                <Link className="lb-button lb-button--primary lb-button--large" to="/register">Register your company</Link>
+                <Link className="lb-button lb-button--secondary lb-button--large" to="/login">Sign in</Link>
+              </div>
+              <p className="lb-hero__note">
+                A <a href={BRAND_SITE}>LogisticBay</a> product · Transport Management System
+              </p>
+            </div>
+            <div className="lb-hero__stage">
+              <Screen {...SCREENS.runs} sizes="(max-width: 1120px) 94vw, 1080px" eager />
+              <ol className="lb-callouts" aria-hidden="true">
+                <li className="lb-callout" style={{ left: "52%", top: "30%" }}><b>1</b>Readiness checks before you publish</li>
+                <li className="lb-callout" style={{ left: "26%", top: "51%" }}><b>2</b>Driver, truck and trailer on one screen</li>
+                <li className="lb-callout" style={{ left: "58%", top: "82%" }}><b>3</b>Your drivers, units and trailers</li>
+              </ol>
+              <p className="lb-screen__caption">The Runs board — {DEMO_NOTE}</p>
+            </div>
           </div>
+        </section>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight mb-6">
-            Plan and dispatch<br />
-            <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-              your transport work
-            </span>
-          </h1>
+        <section id="workflow" className="lb-workflow" aria-labelledby="lb-workflow-title">
+          <div className="lb-container">
+            <div className="lb-section-head">
+              <p className="lb-eyebrow">How it works</p>
+              <h2 id="lb-workflow-title">From request to run.</h2>
+              <p>Four stops on one lane — each one a real screen of the planner. Choose a stop to see it.</p>
+            </div>
 
-          <p className="text-lg sm:text-xl text-slate-300 max-w-xl mb-8 leading-relaxed">
-            Take transport jobs in, plan them into runs, put a driver, truck and trailer on each run, and send the work to your drivers' phones.
-          </p>
+            <div role="tablist" aria-label="The TMS workflow" className="lb-steps">
+              {STEPS.map((s, index) => (
+                <button
+                  key={s.id}
+                  id={`lb-step-${s.id}`}
+                  type="button"
+                  role="tab"
+                  className="lb-step"
+                  aria-selected={s.id === active}
+                  aria-controls="lb-step-panel"
+                  tabIndex={s.id === active ? 0 : -1}
+                  onClick={() => setActive(s.id)}
+                  onKeyDown={event => onStepKey(event, index)}
+                >
+                  <span className="lb-step__marker">{index + 1}</span>
+                  <span className="lb-step__title">{s.title}</span>
+                  <span className="lb-step__body">{s.summary}</span>
+                </button>
+              ))}
+            </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              className="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-400 text-white font-bold text-base px-7 py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-500/30"
-              onClick={() => nav("/register")}
-            >
-              Register your company
-            </button>
-            <button
-              className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-base px-7 py-3.5 rounded-xl transition-colors"
-              onClick={() => nav("/login")}
-            >
-              Sign in
-            </button>
+            <div id="lb-step-panel" role="tabpanel" aria-labelledby={`lb-step-${step.id}`} className="lb-workflow__panel">
+              <div className="lb-workflow__copy">
+                <h3>{step.summary}</h3>
+                <ul>
+                  {step.points.map(point => <li key={point}><Icon name="check" />{point}</li>)}
+                </ul>
+              </div>
+              <div key={step.id} className={isPhone ? "lb-workflow__screen lb-workflow__screen--phone" : "lb-workflow__screen"}>
+                <Screen {...screen} sizes={isPhone ? "300px" : BROWSER_SIZES} phone={isPhone} />
+                <p className="lb-screen__caption">{DEMO_NOTE}</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── FEATURES ── */}
-      <section className="py-20 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-3">
-              For the planning office
-            </h2>
-            <p className="text-slate-500 max-w-lg mx-auto">
-              From the job coming in to the run going out to the driver.
+        <section id="features" className="lb-capabilities" aria-labelledby="lb-features-title">
+          <div className="lb-container">
+            <div className="lb-section-head">
+              <p className="lb-eyebrow">For the planning office</p>
+              <h2 id="lb-features-title">What works today.</h2>
+              <p>Only what is built and working in the TMS now.</p>
+            </div>
+            <ul className="lb-capability-grid">
+              {CAPABILITIES.map(c => (
+                <li key={c.title} className="lb-capability" data-reveal>
+                  <span className="lb-capability__icon"><Icon name={c.icon} /></span>
+                  <h3>{c.title}</h3>
+                  <p>{c.body}</p>
+                </li>
+              ))}
+            </ul>
+
+            <div className="lb-fleet" data-reveal>
+              <div className="lb-fleet__copy">
+                <p className="lb-eyebrow">Fleet</p>
+                <h2>Your units and trailers, ready to plan.</h2>
+                <p>Record each truck and trailer once, with its class, body type and status — then put it on a run from the Runs board.</p>
+              </div>
+              <div>
+                <Screen {...SCREENS.fleet} sizes={BROWSER_SIZES} />
+                <p className="lb-screen__caption">{DEMO_NOTE}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="driver" className="lb-driver" aria-labelledby="lb-driver-title">
+          <div className="lb-container">
+            <div className="lb-section-head">
+              <p className="lb-eyebrow">For the driver</p>
+              <h2 id="lb-driver-title">The run, stop by stop, on the driver's phone.</h2>
+              <p>When a run is published, the driver works through it in the LogisticBay TMS driver app.</p>
+            </div>
+            <ul className="lb-driver__list">
+              {DRIVER_APP.map(item => <li key={item}><Icon name="check" />{item}</li>)}
+            </ul>
+            <p className="lb-driver__note">
+              The driver app is being prepared for its first pilot. It is not yet available in the app stores.
             </p>
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {FEATURES.map(f => (
-              <div
-                key={f.name}
-                className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
-              >
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${f.bg} text-2xl mb-4`} aria-hidden="true">
-                  {f.icon}
-                </div>
-                <h3 className="font-bold text-slate-900 text-base mb-2">{f.name}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
+        <section id="status" className="lb-status-section" aria-labelledby="lb-status-title">
+          <div className="lb-container">
+            <div className="lb-status-panel" data-reveal>
+              <div className="lb-status-panel__copy">
+                <span className="lb-status">Early development</span>
+                <h2 id="lb-status-title">An honest picture of where it stands.</h2>
+                <p>
+                  LogisticBay TMS is in early development. The planning workflow on this page works today; much of the
+                  long-term product is still to be built, and new capabilities appear here only once they work.
+                </p>
+                <p>
+                  It is currently designed around UK operations — addresses, postcodes and vehicle classes.
+                </p>
+                <p>
+                  Questions before you register? <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── DRIVER APP ── */}
-      <section className="bg-gradient-to-br from-slate-900 to-slate-800 py-20 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
-            For the driver
-          </h2>
-          <p className="text-slate-300 text-lg mb-8 leading-relaxed max-w-2xl">
-            When a run is published, the driver sees it in the LogisticBay driver app and works through it stop by stop.
-          </p>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-slate-300 text-sm">
-            {DRIVER_APP.map(item => (
-              <li key={item} className="flex items-start gap-2">
-                <span className="text-green-400 mt-0.5 shrink-0" aria-hidden="true">✓</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* ── HOW IT WORKS ── */}
-      <section className="py-20 px-4 sm:px-6 bg-slate-50">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-3">Getting started</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-            {STEPS.map((s, i) => (
-              <div key={s.n} className="relative text-center sm:text-left">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 text-white font-black text-lg mb-4">
-                  {s.n}
-                </div>
-                {i < STEPS.length - 1 && (
-                  <div className="hidden sm:block absolute top-5 left-10 right-0 h-px bg-gradient-to-r from-blue-300 to-transparent" />
-                )}
-                <h3 className="font-bold text-slate-900 text-base mb-2">{s.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{s.body}</p>
+              <div>
+                <p className="lb-eyebrow lb-start__title">Getting started</p>
+                <ol className="lb-start">
+                  <li><h3>Register your company</h3><p>Create your company account in the planner.</p></li>
+                  <li><h3>Add drivers, trucks and trailers</h3><p>Set up your team and your fleet.</p></li>
+                  <li><h3>Plan your first run</h3><p>Take a job in, put it on a run with a driver, truck and trailer, and publish it.</p></li>
+                </ol>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── FINAL CTA ── */}
-      <section className="py-20 px-4 sm:px-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-8">
-            Ready to plan your first run?
-          </h2>
-          <button
-            className="inline-flex items-center justify-center w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-black text-lg px-10 py-4 rounded-2xl transition-colors shadow-xl shadow-blue-500/30"
-            onClick={() => nav("/register")}
-          >
-            Register your company
-          </button>
-          <p className="text-slate-400 text-sm mt-4">
-            Already have an account?{" "}
-            <button className="text-blue-500 hover:underline font-semibold" onClick={() => nav("/login")}>
-              Sign in
-            </button>
-          </p>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="border-t border-gray-100 py-8 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-400">
-          <div className="font-black text-slate-700 text-base">
-            Logistic<span className="text-blue-500">Bay</span>
+        <section className="lb-cta" aria-labelledby="lb-cta-title">
+          <div className="lb-container lb-cta__inner">
+            <div>
+              <h2 id="lb-cta-title">Ready to plan your first run?</h2>
+              <p>Register your company, or sign in if you already have an account.</p>
+            </div>
+            <div className="lb-cta__actions">
+              <Link className="lb-button lb-button--on-dark lb-button--large" to="/register">Register your company</Link>
+              <Link className="lb-button lb-button--ghost-on-dark lb-button--large" to="/login">Sign in</Link>
+            </div>
           </div>
-          <span>© 2026 Q25 Ltd. LogisticBay is a brand of Q25 Ltd.</span>
+        </section>
+      </main>
+
+      <footer className="lb-footer">
+        <div className="lb-container lb-footer__grid">
+          <div className="lb-footer__brand">
+            <Link to="/" className="lb-lockup" aria-label="LogisticBay TMS home"><Lockup /></Link>
+            <p>Transport management for planners, dispatchers and their drivers.</p>
+          </div>
+          <nav aria-label="LogisticBay TMS">
+            <h2>TMS</h2>
+            <ul>
+              <li><Link to="/login">Sign in</Link></li>
+              <li><Link to="/register">Register your company</Link></li>
+              <li><a href="#workflow">How it works</a></li>
+            </ul>
+          </nav>
+          <nav aria-label="LogisticBay">
+            <h2>LogisticBay</h2>
+            <ul>
+              <li><a href={BRAND_SITE}>LogisticBay home</a></li>
+              <li><a href={TIMESHEETS_SITE}>LogisticBay Timesheets</a></li>
+            </ul>
+          </nav>
+          <nav aria-label="Contact">
+            <h2>Contact</h2>
+            <ul>
+              <li><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div className="lb-container lb-footer__base">
+          <p>© 2026 Q25 Ltd. LogisticBay is a brand of Q25 Ltd.</p>
+          <span className="lb-footer__lane" aria-hidden="true" />
         </div>
       </footer>
-
     </div>
   );
 }
