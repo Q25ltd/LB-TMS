@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /$
+Disallow: /app/
+Disallow: /request/
+Disallow: /verify-email
+Disallow: /reset-password
+Disallow: /forgot-password
+
+Sitemap: https://tms.logisticbay.com/sitemap.xml
